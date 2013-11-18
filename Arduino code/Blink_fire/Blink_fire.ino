@@ -1,14 +1,13 @@
 /*
   Blink
-  Turns on an LED on for one second, then off for one second, repeatedly.
+  Turns on an fire on for some time, then off for a bit, repeatedly.
  
-  This example code is in the public domain.
  */
  
 // Pin 13 has an LED connected on most Arduino boards.
 // give it a name:
 int led = 13;
-int FireSwitch = 7;
+int FireSwitch = A3;
 
 // the setup routine runs once when you press reset:
 void setup() {                
