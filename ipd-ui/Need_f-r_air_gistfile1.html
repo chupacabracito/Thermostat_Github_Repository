@@ -1,0 +1,44 @@
+<!DOCTYPE html> 
+<html manifest="cache.manifest"> 
+  <head> <title>d3 example</title> </head> 
+Ê
+  <body> 
+    <div id='d3TutoGraphContainer'></div>
+Ê
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script type="text/javascript" src="http://d3js.org/d3.v2.min.js"></script>
+Ê
+    <script type="text/javascript">
+      // Suppose there is currently one div with id "d3TutoGraphContainer" in the DOM
+      // We append a 600x300 empty SVG container in the div
+      var chart = d3.select("#d3TutoGraphContainer").append("svg").attr("width", "600").attr("height", "300");
+Ê
+      // Create the bar chart which consists of ten SVG rectangles, one for each piece of data
+      var rects = chart.selectAll('rect').data([1 ,4, 5, 6, 24, 8, 12, 1, 1, 20])
+                       .enter().append('rect')
+                       .attr("stroke", "none").attr("fill", "rgb(7, 130, 180)")
+                       .attr("x", 0)
+                       .attr("y", function(d, i) { return 25 * i; } )
+                       .attr("width", function(d) { return 20 * d; } )
+                       .attr("height", "20");
+Ê
+      // Transition on click managed by jQuery
+      rects.on('click', function() {
+        // Generate randomly a data set with 10 elements
+        var newData = [];
+        for (var i=0; i<10; i+=1) { newData.push(Math.floor(24 * Math.random())); }
+Ê
+        // Generate a random color
+        var newColor = 'rgb(' + Math.floor(255 * Math.random()) +
+                         ', ' + Math.floor(255 * Math.random()) +
+                         ', ' + Math.floor(255 * Math.random()) + ')';
+Ê
+        rects.data(newData)
+             .transition().duration(2000).delay(200)
+             .attr("width", function(d) { return d * 20; } )
+             .attr("fill", newColor);
+      });
+    </script>
+Ê
+  </body>
+</html>

@@ -79,7 +79,13 @@ SimpleGraph = function(elemid, options) {
     this.plot = this.vis.append("rect")
     .attr("width", this.size.width)
     .attr("height", this.size.height)
-    .style("fill", "#EEEEEE")
+	
+	//trying background image.  didn't work.  
+	// .append('svg:image')
+	// .attr('xlink:href', 'assets/color_graient.jpg')
+	
+    .style("img", "assets/color_graient.jpg")  // didn't work.  : (
+    .style("fill", "#00EE00")    // this's the background color for the plot
 //    .attr("pointer-events", "all")
 //    .on("mousedown.drag", self.plot_drag())
 //    .on("touchstart.drag", self.plot_drag())
@@ -349,7 +355,7 @@ SimpleGraph.prototype.redraw = function() {
         var gye = gy.enter().insert("g", "a")
         .attr("class", "y")
         .attr("transform", ty)
-        .attr("background-fill", "#FFEEB6");
+        .attr("background-image", "assets/color_graient.jpg");  // attempt to put in color background.  Didn't work.
         
         gye.append("line")
         .attr("stroke", stroke)
