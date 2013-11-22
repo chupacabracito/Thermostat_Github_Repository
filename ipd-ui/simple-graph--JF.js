@@ -85,7 +85,7 @@ SimpleGraph = function(elemid, options) {
 	// .attr('xlink:href', 'assets/color_graient.jpg')
 	
     .style("img", "assets/color_graient.jpg")  // didn't work.  : (
-    .style("fill", "#00EE00")    // this's the background color for the plot
+    .style("fill", "#ccEEcc")    // this's the background color for the plot
 //    .attr("pointer-events", "all")
 //    .on("mousedown.drag", self.plot_drag())
 //    .on("touchstart.drag", self.plot_drag())
