@@ -91,6 +91,24 @@ SimpleGraph = function(elemid, options) {
 //    .on("touchstart.drag", self.plot_drag())
 //    this.plot.call(d3.behavior.zoom().x(this.x).y(this.y).on("zoom", this.redraw()));
 
+
+
+
+
+
+
+//trying background gradient
+
+
+
+
+
+
+
+
+
+
+
       //Draw the datapoints and lines between them?
     this.vis.append("svg")
     .attr("top", 0)
