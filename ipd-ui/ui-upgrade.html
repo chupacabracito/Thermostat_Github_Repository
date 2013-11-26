@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
     <style>
-        
-        
+        body {
+            font: 10px sans-serif;
+        }
         
         .dot circle {
             fill: lightsteelblue;
@@ -15,13 +16,18 @@
             stroke: brown;
         }
         
-        .axis line {
+        .axis path, .axis line {
             fill: none;
             stroke: #000;
             stroke-width: 0.5;
             opacity: .1;
             shape-rendering: crispEdges;
             vector-effect: non-scaling-stroke;
+        }
+        
+        .x.label, .y.label {
+            font-size: 10px;
+            fill: #fff;
         }
         
         div.tooltip {
@@ -46,9 +52,12 @@
             var mode = 0;
             var isDrag = 1;
             
-            var margin = {top: -5, right: -5, bottom: -5, left: -5},
+            var margin = {top: 20, right: 20, bottom: 20, left: 30},
             width = 960 - margin.left - margin.right,
             height = 500 - margin.top - margin.bottom;
+            
+            var parse = d3.time.format("%Y-%m-%d %H:%M:%S").parse,
+                format = d3.time.format("%Y-%m-%d %H:%M");
             
             var zoom = d3.behavior.zoom()
             .scaleExtent([1, 5])
@@ -100,13 +109,13 @@
             
             var container = svg.append("g");
             
+            var d1 = new Date(2013, 10, 27, 0, 0, 0, 0);
+            var d2 = new Date(2013, 10, 28, 0, 0, 0, 0);
+            var x = d3.time.scale().domain([d1,d2]).range([0, width]),
+                y = d3.scale.linear().domain([-60, 110]).range([height, 0]);
             
-            var x = d3.time.scale().range([0, width]),
-                y = d3.scale.linear().range([height, 0]);
-            
-            //var xAxis = d3.svg.axis().scale(x).orient("bottom"),
-            //    yAxis = d3.svg.axis().scale(y).orient("left");
-            
+            var xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(d3.time.hour, 3),
+                yAxis = d3.svg.axis().scale(y).orient("left").ticks(20);
             
             container.append("g")
             .attr("class", "x axis")
@@ -138,8 +147,12 @@
                        .attr("class", "dot")
                        .append("circle")
                        .attr("r", 5)
-                       .attr("cx", function(d) { return d.x; })
-                       .attr("cy", function(d) { return d.y; })
+                       .attr("cx", function(d) {
+                             console.log(parse(d.date + " " + d.time));
+                             return x(parse(d.date + " " + d.time)); })
+                       .attr("cy", function(d) {
+                             //console.log(d.temp);
+                             return y(d.temp); })
                        .on("click", context)
                        .on("mouseover", mouseover)
                        .on("mousemove", mousemove)
@@ -196,8 +209,8 @@
             }
             
             function dragged(d) {
-                console.log(d3.event.x);
-                console.log(d3.event.y);
+                //console.log(d3.event.x);
+                //console.log(d3.event.y);
                 d3.select(this).attr("cx", function() { return d3.event.x; })
                 .attr("cy", function() { return d3.event.y; });
             }
@@ -208,13 +221,15 @@
             
             function mouseover() {
                 div.transition()
-                .duration(500)
+                .duration(100)
                 .style("opacity", .7);
             }
             
             function mousemove() {
+                var x0 = x.invert(d3.mouse(this)[0]);
+                var y0 = y.invert(d3.mouse(this)[1]);
                 div
-                .text(d3.event.pageX + ", " + d3.event.pageY)
+                .text(x0 + ", " + y0)//d3.event.pageY)
                 .style("left", (d3.event.pageX + 20) + "px")
                 .style("top", (d3.event.pageY - 12) + "px");
             }
@@ -224,6 +239,33 @@
                 .duration(500)
                 .style("opacity", 1e-6);
             }
+            
+            // Create X Axis label
+            container.append("text")
+            .attr("class", "x label")
+            .attr("text-anchor", "end")
+            .attr("x", width + margin.right - 35)
+            .attr("y", height + margin.bottom - 25)
+            .text("Time (Months/Years)");
+            
+            // Create Y Axis label
+            container.append("text")
+            .attr("class", "y label")
+            .attr("text-anchor", "end")
+            .attr("y", -margin.left+40)
+            .attr("x", -12)
+            .attr("dy", ".75em")
+            .attr("transform", "rotate(-90)")
+            .text("Temperature (ºF)");
+
+            
+            svg.append("g").attr("class", "x axis")
+            .attr("transform", "translate(" + 0 + "," + height + ")")
+            .call(xAxis);
+            svg.append("g").attr("class", "y axis")
+            .call(yAxis);
+            
+            
             
             initGraph();
             
