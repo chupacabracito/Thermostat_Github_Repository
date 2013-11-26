@@ -2,6 +2,8 @@
 <meta charset="utf-8">
     <style>
         
+        
+        
         .dot circle {
             fill: lightsteelblue;
             stroke: steelblue;
@@ -22,60 +24,23 @@
             vector-effect: non-scaling-stroke;
         }
         
-        #tooltip {
+        div.tooltip {
             position: absolute;
-            width: 200px;
-            height: auto;
-            padding: 10px;
-            background-color: white;
-            -webkit-border-radius: 10px;
-            -moz-border-radius: 10px;
-            border-radius: 10px;
-            -webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
-            -moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
-            box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+            text-align: center;
+            width: 60px;
+            height: 12px;
+            padding: 8px;
+            font: 10px sans-serif;
+            background: #ddd;
+            border: solid 1px #aaa;
+            border-radius: 8px;
             pointer-events: none;
         }
         
-        #tooltip.hidden {
-            display: none;
-        }
-        
-        #tooltip p {
-            margin: 0;
-            font-family: sans-serif;
-            font-size: 16px;
-            line-height: 20px;
-        }
-        
         </style>
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
     <body>
-        <p> Press on any part of the chart to add. Hold the shift-key and  
-            press on a dot to delete. Dots are draggable.</p>
-            
-            
-            
-            
-            
-            
-            
-   <!-- D3 script -->        
+        <p> Press on any part of the chart to add. Hold the shift-key and press on a dot to delete. Dots are draggable.</p>
+        <!-- D3 script -->        
         <script src="assets/d3.v3.min.js"></script>
         <script>
             var mode = 0;
@@ -96,13 +61,17 @@
             .on("dragend", dragended);
             
             var svg = d3.select("body").append("svg")
-			.attr("width", width + margin.left + margin.right)
+            .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.right + ")")
-            .on("click", added)   // adds a new dot
+            .on("click", added)
             .call(zoom);
 
+            var div = d3.select("body").append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 1e-6);
+            
             var defs = svg.append("defs");
             
             defs.append('svg:linearGradient')
@@ -135,8 +104,8 @@
             var x = d3.time.scale().range([0, width]),
                 y = d3.scale.linear().range([height, 0]);
             
-            var xAxis = d3.svg.axis().scale(x).orient("bottom"),
-                yAxis = d3.svg.axis().scale(y).orient("left");
+            //var xAxis = d3.svg.axis().scale(x).orient("bottom"),
+            //    yAxis = d3.svg.axis().scale(y).orient("left");
             
             
             container.append("g")
@@ -172,6 +141,9 @@
                        .attr("cx", function(d) { return d.x; })
                        .attr("cy", function(d) { return d.y; })
                        .on("click", context)
+                       .on("mouseover", mouseover)
+                       .on("mousemove", mousemove)
+                       .on("mouseout", mouseout)
                        .call(drag);
                        });
             } 
@@ -201,6 +173,9 @@
                     .attr("r", 5)
                     .attr("cx", function(d) { return coords[0]; })
                     .attr("cy", function(d) { return coords[1]; })
+                    .on("mouseover", mouseover)
+                    .on("mousemove", mousemove)
+                    .on("mouseout", mouseout)
                     .on("click", context)                    
                     .call(drag)
                 } else {
@@ -229,6 +204,25 @@
             
             function dragended(d) {
                 d3.select(this).classed("dragging", false);
+            }
+            
+            function mouseover() {
+                div.transition()
+                .duration(500)
+                .style("opacity", .7);
+            }
+            
+            function mousemove() {
+                div
+                .text(d3.event.pageX + ", " + d3.event.pageY)
+                .style("left", (d3.event.pageX + 20) + "px")
+                .style("top", (d3.event.pageY - 12) + "px");
+            }
+            
+            function mouseout() {
+                div.transition()
+                .duration(500)
+                .style("opacity", 1e-6);
             }
             
             initGraph();
