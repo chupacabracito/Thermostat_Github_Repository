@@ -21,6 +21,10 @@ const int xpin = A3;                  // x-axis of the accelerometer
 //const int ypin = A2;                  // y-axis
 //const int zpin = A1;                  // z-axis (only on 3-axis models)
 
+
+#define acosf acos;
+
+
 void setup()
 {
   // initialize the serial communications:
@@ -31,7 +35,7 @@ void setup()
 
 void loop()
 {
-Math.acos(); 
+
   
   // print the sensor values:
   Serial.print(analogRead(xpin));
@@ -44,17 +48,13 @@ Math.acos();
   //print a linefeed:
   
   float cosine = analogRead(xpin) * (-0.0152) + 4.97;
-  
+  float arccos = acos(cosine);
  
   Serial.print(cosine);
     Serial.print("\t");
     
-  float radian = Math.acos(cosine);
-  Serial.print(radian);  
-    Serial.print("\t");
-    
+  
 
-  Serial.print(degree);
   
   Serial.println();
   // delay before next reading:

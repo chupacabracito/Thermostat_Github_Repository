@@ -1,4 +1,4 @@
-////////////////////////////////////////////THERMISTOR
+////////////////////////////////////THERMISTOR_DECLERATIONS
 // which analog pin to connect
 #define THERMISTORPIN_RADIANT A1   
 #define THERMOSTORPIN_AIR A2
@@ -15,11 +15,49 @@
 #define SERIESRESISTOR 10000    
  
 int samples_rad [NUMSAMPLES];
+int samples_air [NUMSAMPLES];
+
+
+
+
+///////////////////////////////////FIRE_CONTROL_DECLERATIONS
+/*
+  This code turns on the fire when you heat up the thermistor.
+  It also turns on LEDs for disgnostics. 
+*/
+ 
+int igniter = 6;
+int propane = 7;
+int BlueLED = 13; 
+int RedLED = A4;  // actually not used
+//int thermosensor = A1;
+int SetpointCool = 24;
+int SetpointHeat = 20;
+boolean FireOn = false;
+
+
+
+
+
  
 void setup(void) {
-  Serial.begin(9600);
-  analogReference(EXTERNAL);
+    Serial.begin(115200);
+ 
+  
+  pinMode(igniter, OUTPUT);  
+  pinMode(propane, OUTPUT);
+  pinMode(BlueLED, OUTPUT);  //Fire Control Setup
 }
+
+
+
+
+
+
+
+
+
+
 
 void loop(void) {
   uint8_t i;
@@ -52,7 +90,7 @@ void loop(void) {
 //  Serial.println(average_radiant);
  
   float steinhart_rad;
-  steinhart_rad = average_rad / THERMISTORNOMINAL_RADIANT;     // (R/Ro)
+  steinhart_rad = average_rad / THERMISTORNOMINAL;     // (R/Ro)
   steinhart_rad = log(steinhart_rad);                  // ln(R/Ro)
   steinhart_rad /= BCOEFFICIENT;                   // 1/B * ln(R/Ro)
   steinhart_rad += 1.0 / (TEMPERATURENOMINAL + 273.15); // + (1/To)
@@ -60,7 +98,7 @@ void loop(void) {
   steinhart_rad -= 273.15;                         // convert to C
   float fahrenheit_rad = steinhart_rad * 9/5 + 32;     // convert to F
  
-  Serial.print("Radiant Temperature "); 
+  Serial.print("Radiant Temperature: "); 
   Serial.print(fahrenheit_rad);
   Serial.print(" *F");
   Serial.print('\t');
@@ -69,7 +107,7 @@ void loop(void) {
  
   // take N samples in a row, with a slight delay
   for (i=0; i< NUMSAMPLES; i++) {
-   samples_air[i] = analogRead(THERMISTORPIN_AIR);
+   samples_air[i] = analogRead(THERMOSTORPIN_AIR);
    delay(10);
   }
  
@@ -96,9 +134,9 @@ void loop(void) {
   steinhart_air += 1.0 / (TEMPERATURENOMINAL + 273.15); // + (1/To)
   steinhart_air = 1.0 / steinhart_air;                 // Invert
   steinhart_air -= 273.15;                         // convert to C
-  float fahrenheit_air = steinhart_air * 9/5 + 32;     // convert to F
+  float fahrenheit_air = fahrenheit_air * 9/5 + 32;     // convert to F
  
-  Serial.print("Air Temperature "); 
+  Serial.print("Air Temperature: "); 
   Serial.print(fahrenheit_air);
   Serial.print(" *F");
   Serial.print('\t');
@@ -109,48 +147,15 @@ void loop(void) {
    Serial.println(operating);
   
   delay(100);
-}
-
-
-
-
-///////////////////////////////////FIRE_CONTROL
-/*
-  This code turns on the fire when you heat up the thermistor.
-  It also turns on LEDs for disgnostics.
-  
-*/
-
-
- 
-int igniter = 6;
-int propane = 7;
-int BlueLED = 13; 
-int RedLED = A4;  // actually not used
-int thermosensor = A1;
-int SetpointCool = 24;
-int SetpointHeat = 20;
-boolean FireOn = false;
-
-// the setup routine runs once when you press reset:
-void setup() {                
-  // initialize the digital pin as an output.
-  Serial.begin(115200);
-
-  pinMode(igniter, OUTPUT);  
-  pinMode(propane, OUTPUT);
-  pinMode(BlueLED, OUTPUT);     
-}
 
 
 
 
 
 
+ //////////////////////////////////FIRE_CONTROL
 
 
-
-void loop() {
   //read serial for setpoint change:
    if (Serial.available()) {
         /* read the most recent byte */
@@ -161,27 +166,28 @@ void loop() {
 
 
     
-    //read & print temperature:
+    //read & print temperature from 3-pinthermosensor:
     // read the input on analog pin 0:
-    int sensorValue = analogRead(thermosensor);
+    //int sensorValue = analogRead(thermosensor);
     // Convert the analog reading (which goes from 0 - 1023) to a voltage (0 - 5V):
-    float voltage = sensorValue * (5.0 / 1023.0);
-    float temperatureC = (voltage - 0.5) * 100 ;  //converting from 10 mv per degree wit 500 mV offset
-    float temperatureF = temperatureC * 9/5 + 32;
+    //float voltage = sensorValue * (5.0 / 1023.0);
+    //float temperatureC = (voltage - 0.5) * 100 ;  //converting from 10 mv per degree wit 500 mV offset
+    //float temperatureF = temperatureC * 9/5 + 32;
 
     // print out the value you read:
-    Serial.print("Temperature: ");  Serial.print(temperatureF);
+   // Serial.print("Temperature: ");  Serial.print(temperatureF);
     Serial.print("      SetpointCool: ");  Serial.print(SetpointCool);
     Serial.print("      SetpointHeat: ");  Serial.print(SetpointHeat);
     Serial.print("      FireOn: ");  Serial.print(FireOn);
-    Serial.print('\n');
+    Serial.print('\t');
+    //Serial.print('\n');
     //done reading & displaying temperature
 
 
 
     //set fire if it's warm,
     //light up red LED for heating & blue LED for cooling:
-    if(temperatureF > SetpointCool) {
+    if(fahrenheit_rad > SetpointCool) {
           digitalWrite(BlueLED, HIGH);   // turn the blue LED on
           digitalWrite(RedLED, LOW);  
 
@@ -197,7 +203,7 @@ void loop() {
            
          }  
        else {
-              if(temperatureF < SetpointHeat) { 
+              if(fahrenheit_rad < SetpointHeat) { 
                    digitalWrite(RedLED, HIGH);   // turn the red LED on
                    digitalWrite(BlueLED, LOW);
 

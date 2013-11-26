@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Force based label placement</title>
+    <script type="text/javascript" src="http://d3js.org/d3.v2.js"></script>
+    <script src="d3_stacked_bar_graph.js"></script>
+  </head>
+  <body>
+    <div id="container"></div>
+    <script type="text/javascript" charset="utf-8">
+      var data = [
+	  {
+        xValue : "test1"
+      },
+  	  {
+        xValue : "test2"
+      }
+	  ];
+	  
+      var stackData = [];
+      for (var i =0; i < 11; i++) {
+        stackData.push({
+          color : i,
+          value : 10,
+          tooltip: "color: "+i,
+        });
+      }
+
+      data[0].stackData = stackData;
+
+	  
+	  //tweaking for a second X
+      var stackData = [];
+      for (var i =0; i < 11; i++) {
+        stackData.push({
+          color : i,
+          value : 10,
+          tooltip: "color: "+i,
+        });
+      }
+
+      data[1].stackData = stackData;
+
+      var svg = d3.select("#container").append("svg");
+      var div = d3.select("#container").append("div");
+
+      var param = {
+        data : data,
+        width : 500,
+        height : 500,
+      };
+
+      var barGraph = edx_d3CreateStackedBarGraph(param, svg, div);
+      	barGraph.scale.stackColor
+         .domain([0,5,10])
+        .range(["#e13f29","#ebc40f","#17a74d"]);  //specifies start, middle, & end of colors
+      barGraph.drawGraph(); //desined in .js file
+    </script>
+  </body>
+</html>
