@@ -78,8 +78,6 @@
    <!-- D3 script -->        
         <script src="assets/d3.v3.min.js"></script>
         <script>
-			var HeatingOn = false;
-			var CoolingOn = false;
 		
             var mode = 0;
             var isDrag = 1;
@@ -397,36 +395,55 @@ svg.append("text")   // Label "Heating / Cooling"
 	.style('font-size', '22px')
 	.text("Heating / Cooling:"); 
 
-var HeatIcon = svg.append("image")   // Display FireOn or FireOff icon
-		//.attr("width", 50)
-		//.attr("height", 50)
-		//Make if/then to choose image
-		if(HeatingOn = true) {
-			HeatIcon.image("assets/Icon_Fire_On.png");   // DOESN'T WORK ---- FIX 
-			}
-		else {
-			CoolIcon.image("assets/Icon_Fire_On.png");   // DOESN'T WORK ---- FIX 	
-		}
-		FireIcon.attr("x", width - TempYOffset);
-		FireIcon.attr("y", 400);
-
 	
-var CoolIcon = svg.append("image")   // Display IceOn or IceOff icon
-		//.attr("width", 50)
-		//.attr("height", 50)
-		//Make if/then to choose image
-		if(CoolingOn = true) {
-			CoolIcon.image("assets/Icon_Ice_On.png");   // DOESN'T WORK ---- FIX 
-			}
-		else {
-			CoolIcon.image("assets/Icon_Ice_On.png");   // DOESN'T WORK ---- FIX 	
-		}
-		CoolIcon.attr("x", width - TempYOffset + 100);
-		CoolIcon.attr("y", 400);
+//add something to listen for state of heating / cooling from websockets
+//add something to listen for state of heating / cooling from websockets
+//add something to listen for state of heating / cooling from websockets
+	var HeatingOn = true;
+	var CoolingOn = false;
 
-			
-			
+	var HeatingIcon = svg.append("image")   // Display icon for Heat on / off
+		.attr("width", 70)
+		.attr("height", 70)
+		.attr("x", width - TempYOffset + 10)
+		.attr("y", 420)
+		if(HeatingOn == true) {
+		HeatingIcon.attr("xlink:href", "assets/Icon_Fire_On.png");   
+			}
+		 else {
+		HeatingIcon.attr("xlink:href", "assets/Icon_Fire_Off.png");   
+		  }
+	
+	
+	
+
+	var CoolingIcon = svg.append("image")   // Display icon for cool on / off
+		.attr("width", 70)
+		.attr("height", 70)
+		.attr("x", width - TempYOffset + 100)
+		.attr("y", 420)
+		if(CoolingOn == true) {
+		CoolingIcon.attr("xlink:href", "assets/Icon_Ice_On.png");   
+			}
+		 else {
+		CoolingIcon.attr("xlink:href", "assets/Icon_Ice_Off.png");   
+		  }
+
+
+
+
 //Done making status indicators for Heating & Cooling:
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
 			
 			
 			
