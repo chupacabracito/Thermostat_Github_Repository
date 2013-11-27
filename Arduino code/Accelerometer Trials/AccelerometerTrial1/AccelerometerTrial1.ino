@@ -38,9 +38,9 @@ void loop()
 
   
   // print the sensor values:
-  Serial.print(analogRead(xpin));
+ // Serial.print(analogRead(xpin));
   // print a tab between values:
-  Serial.print("\t");
+ // Serial.print("\t");
   //Serial.print(analogRead(ypin));
   // print a tab between values:
  // Serial.print("\t");
@@ -48,11 +48,20 @@ void loop()
   //print a linefeed:
   
   float cosine = analogRead(xpin) * (-0.0152) + 4.97;
-  float arccos = acos(cosine);
- 
-  Serial.print(cosine);
-    Serial.print("\t");
+  
+  if (cosine > 1) {
+    cosine = 1;}
+  if (cosine < (-1)) {
+    cosine = -1;}
     
+  float arccos = acos(cosine);
+  
+  int settemp = arccos * (-10.308) + 91.905;
+  
+ // Serial.print(arccos);
+ //   Serial.print("\t");
+     Serial.print("Set temperature: *F");
+  Serial.print(settemp);
   
 
   
