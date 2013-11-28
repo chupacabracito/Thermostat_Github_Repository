@@ -285,8 +285,8 @@
             }
             
             function dragged(d) {
-                console.log(d3.event.x);
-                console.log(d3.event.y);
+                //console.log(d3.event.x);
+                //console.log(d3.event.y);
             
                 if (d3.event.y >= 0 && d3.event.y <= 395
                     && d3.event.x >= 0 && d3.event.x <= 790) {
@@ -310,10 +310,15 @@
             }
             
             function mousemove() {
+                //d3.select(this).select("circle")
                 var x0 = x.invert(d3.mouse(this)[0]);
                 var y0 = y.invert(d3.mouse(this)[1]);
-                
-                d3.select(this).selectAll("text").text(number(y0));
+                var centery = d3.select(this).select("circle").attr("cy");
+                console.log(centery);
+                console.log(d3.event.y);
+                if ((d3.event.y - centery) > 122 && (centery - d3.event.y) > -128) {
+                    d3.select(this).selectAll("text").text(number(y0));
+                }
             }
             
             function mouseout() {
