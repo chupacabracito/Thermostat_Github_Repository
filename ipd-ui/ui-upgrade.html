@@ -316,7 +316,7 @@
                 var centery = d3.select(this).select("circle").attr("cy");
                 console.log(centery);
                 console.log(d3.event.y);
-                if ((d3.event.y - centery) > 122 && (centery - d3.event.y) > -128) {
+                if ((d3.event.y - centery) > 100) {//&& (centery - d3.event.y) > -90) {
                     d3.select(this).selectAll("text").text(number(y0));
                 }
             }
