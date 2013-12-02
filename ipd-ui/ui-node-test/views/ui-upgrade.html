@@ -59,7 +59,6 @@
     <body>
         <p> Press on any part of the chart to add. Hold the shift-key and press on a dot to delete. Dots are draggable.</p>
         <!-- D3 script -->
-        <script src="/socket.io/socket.io.js"></script>
         <script src="assets/d3.v3.min.js"></script>
         <script>
 
@@ -454,8 +453,8 @@ var OperTempRect = svg.append("rect")  // Operative temp. box
 			.style("fill", "#000")
 			.attr("font-weight","Bold")
 			.style('font-family', 'Arial')
-			.style('font-size', '16px');
-			//.text("77°");
+			.style('font-size', '16px')
+			.text("77°");
 			
 		svg.append("text")
 			.attr("x", SVGWidth - SidebarWidth + 100)
@@ -468,13 +467,14 @@ var OperTempRect = svg.append("rect")  // Operative temp. box
 
 //Done drawing temperature readings in upper right
 		
+        /* NOTE: Commented out due to portability bug
         // connect socket.io to server
         var socket = io.connect('http://localhost:8080');
         // sensorReading from Arduino microcontroller
         socket.on('sensorReading', function (data) {
                   d3.select("#radiant").text(data);
                   });
-			
+		*/	
 			
 			
 			
