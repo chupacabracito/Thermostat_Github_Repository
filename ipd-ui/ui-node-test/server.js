@@ -24,10 +24,10 @@ var express = require('express');
 var app = express();
 
 app.set('views', __dirname + '/views');
- app.register('.html', require('jade'));
-//app.set('view engine', 'jade');
+app.set('view engine', 'jade');
+app.register('.html', require('jade'));
+//app.use(express.status(_dirname + '/public'));
 
-app.use(express.status(_dirname + '/public'));
 
 app.get('/', function(req, res){
   //render the index.jade template
