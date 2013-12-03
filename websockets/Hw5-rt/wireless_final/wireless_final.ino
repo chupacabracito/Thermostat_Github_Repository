@@ -81,7 +81,7 @@ void loop(void) {
  if (client) {
    */
 byte incomingByte = Serial.read();
- 
+
  if (onOff == true) {
    if (incomingByte == 49) {
      onOff = true;
