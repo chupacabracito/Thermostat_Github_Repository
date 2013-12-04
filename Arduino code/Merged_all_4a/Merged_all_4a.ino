@@ -30,13 +30,35 @@ int igniter = 7;
 int propane = 8;
 int cooler = 9;
 int BlueLED = 6;    // actually not used
-int YellowLED = 6;  // actually not used
-int RedLED = A4;    // actually not used
+int YellowLED = 2;  // actually not used
+int RedLED = 4;    // actually not used
 //int thermosensor = A1;
 int SetpointHeat = 60;
-int SetpointCool = SetpointHeat + 5;  // maybe make independent later
+int SetpointCool;  // maybe make independent later
 boolean FireOn = false;
 boolean CoolingOn = false;
+float arccos = 0;
+float KnobSetpointPrevious = 0; 
+
+
+//////////////////////////////////ACCELEROMETER DECLERATIONS
+/*
+ ADXL3xx
+ The circuit:
+ analog 0: accelerometer self test
+ analog 1: z-axis
+ analog 2: y-axis
+ analog 3: x-axis
+
+*/
+
+// these constants describe the pins. They won't change:
+const int xpin = A3;                  // x-axis of the accelerometer
+//const int ypin = A2;                  // y-axis
+//const int zpin = A1;                  // z-axis (only on 3-axis models)
+
+
+#define acosf acos;
 
 
 
@@ -46,6 +68,9 @@ boolean CoolingOn = false;
 void setup(void) {
     Serial.begin(115200);
  
+ 
+    
+ 
   
   pinMode(igniter, OUTPUT);  
   pinMode(propane, OUTPUT);
@@ -53,6 +78,10 @@ void setup(void) {
   pinMode(YellowLED, OUTPUT);  
   pinMode(RedLED, OUTPUT);
   pinMode(BlueLED, OUTPUT);  
+  
+  
+  
+  
 }
 
 
@@ -114,7 +143,7 @@ void loop(void) {
   // take N samples in a row, with a slight delay
   for (i=0; i< NUMSAMPLES; i++) {
    samples_air[i] = analogRead(THERMOSTORPIN_AIR);
-   delay(10);
+   //delay(10);
   }
  
   // average all the samples out
@@ -146,25 +175,71 @@ void loop(void) {
    fahrenheit_air = fahrenheit_rad;
    //delete that when air temp sensor working!
  
-  Serial.print("Air Temp (fake): "); 
-  Serial.print(fahrenheit_air);
-  Serial.print(" *F");
-  Serial.print('\t');
+ 
+  //Serial.print("Air Temp (fake): "); 
+  //Serial.print(fahrenheit_air);
+  //Serial.print(" *F");
+  //Serial.print('\t');
  
  
  ////////////////////////////////// calc operative temp
  OperativeTemp = (fahrenheit_rad + fahrenheit_air)/2;
 
-  Serial.print("Operative Temp: "); 
-  Serial.print(OperativeTemp);
-  Serial.print(" *F");
-  Serial.print('\t');
+  //Serial.print("Operative Temp: "); 
+  //Serial.print(OperativeTemp);
+  //Serial.print(" *F");
+  //Serial.print('\t');
 
 
 
 
 
+////////////////////////////////////////ACCELEROMETER
 
+ // print the sensor values:
+ // Serial.print(analogRead(xpin));
+  // print a tab between values:
+ // Serial.print("\t");
+  //Serial.print(analogRead(ypin));
+  // print a tab between values:
+ // Serial.print("\t");
+  //Serial.print(analogRead(zpin));
+  //print a linefeed:
+  
+  float cosine = analogRead(xpin) * (-0.0152) + 4.97;
+  
+  if (cosine > 1) {
+    cosine = 1;}
+  if (cosine < (-1)) {
+    cosine = -1;}
+  
+  arccos = acos(cosine);
+  int KnobSetpoint = arccos * (-10.308) + 91.905;
+  Serial.print("knobSetpoint: "); 
+  Serial.print(KnobSetpoint);
+  Serial.print("    "); 
+  Serial.print("knobSetPrev: "); 
+  Serial.print(KnobSetpointPrevious);
+  Serial.print("    "); 
+  
+  
+  //Knob sets temp setpoint IF THE KNOB POSITION HAS CHANGED:
+  if (KnobSetpoint == KnobSetpointPrevious) {}
+  else {
+        SetpointHeat = KnobSetpoint;    
+        KnobSetpointPrevious = KnobSetpoint;
+       }
+       
+  //done setting temp setpoint
+  
+  
+ // Serial.print(arccos);
+ //   Serial.print("\t");
+ //   Serial.print("Set temperature: *F");
+ //   Serial.print(SetpointHeat);
+ //   Serial.print('\t');
+ // delay before next reading:
+ //delay(500);
 
 
 
@@ -182,7 +257,7 @@ void loop(void) {
         /* read the most recent byte */
         SetpointHeat = Serial.parseInt();
        }
-       SetpointCool = SetpointHeat + 5;  // resetting just in case
+       int SetpointCool = SetpointHeat + 5;  // resetting just in case
   //done reading for setpoint change
   
     
@@ -202,7 +277,8 @@ void loop(void) {
     Serial.print("      SetpointCool: ");  Serial.print(SetpointCool);
     Serial.print("      FireOn: ");  Serial.print(FireOn);
     Serial.print("      CoolingOn: ");  Serial.print(CoolingOn);
-    Serial.print('\n');
+    Serial.println();
+
     //done reading & displaying temperature
 
 

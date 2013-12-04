@@ -6,9 +6,9 @@
 
 
  
-int igniter = 6;
-int propane = 7;
-int BlueLED = 13; 
+int igniter = 7;
+int propane = 8;
+int BlueLED = 9; 
 int RedLED = A4;  // actually not used
 int thermosensor = A0;
 int SetpointCool = 24;

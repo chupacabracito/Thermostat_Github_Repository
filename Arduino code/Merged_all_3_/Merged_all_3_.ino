@@ -33,10 +33,40 @@ int BlueLED = 6;    // actually not used
 int YellowLED = 6;  // actually not used
 int RedLED = A4;    // actually not used
 //int thermosensor = A1;
-int SetpointHeat = 60;
-int SetpointCool = SetpointHeat + 5;  // maybe make independent later
+//int SetpointHeat = 60;
+//int SetpointCool;  // maybe make independent later
 boolean FireOn = false;
 boolean CoolingOn = false;
+
+
+
+
+//////////////////////////////////ACCELEROMETER DECLERATIONS
+/*
+ ADXL3xx
+ 
+ Reads an Analog Devices ADXL3xx accelerometer and communicates the
+ acceleration to the computer.  The pins used are designed to be easily
+ compatible with the breakout boards from Sparkfun, available from:
+ http://www.sparkfun.com/commerce/categories.php?c=80
+
+ http://www.arduino.cc/en/Tutorial/ADXL3xx
+
+ The circuit:
+ analog 0: accelerometer self test
+ analog 1: z-axis
+ analog 2: y-axis
+ analog 3: x-axis
+
+*/
+
+// these constants describe the pins. They won't change:
+const int xpin = A3;                  // x-axis of the accelerometer
+//const int ypin = A2;                  // y-axis
+//const int zpin = A1;                  // z-axis (only on 3-axis models)
+
+
+#define acosf acos;
 
 
 
@@ -46,6 +76,9 @@ boolean CoolingOn = false;
 void setup(void) {
     Serial.begin(115200);
  
+ 
+    
+ 
   
   pinMode(igniter, OUTPUT);  
   pinMode(propane, OUTPUT);
@@ -53,6 +86,10 @@ void setup(void) {
   pinMode(YellowLED, OUTPUT);  
   pinMode(RedLED, OUTPUT);
   pinMode(BlueLED, OUTPUT);  
+  
+  
+  
+  
 }
 
 
@@ -164,7 +201,39 @@ void loop(void) {
 
 
 
+////////////////////////////////////////ACCELEROMETER
 
+ // print the sensor values:
+ // Serial.print(analogRead(xpin));
+  // print a tab between values:
+ // Serial.print("\t");
+  //Serial.print(analogRead(ypin));
+  // print a tab between values:
+ // Serial.print("\t");
+  //Serial.print(analogRead(zpin));
+  //print a linefeed:
+  
+  float cosine = analogRead(xpin) * (-0.0152) + 4.97;
+  
+  if (cosine > 1) {
+    cosine = 1;}
+  if (cosine < (-1)) {
+    cosine = -1;}
+    
+  float arccos = acos(cosine);
+  
+  int SetpointHeat = arccos * (-10.308) + 91.905;
+  
+ // Serial.print(arccos);
+ //   Serial.print("\t");
+     Serial.print("Set temperature: *F");
+     Serial.print(SetpointHeat);
+     Serial.print('\t');
+  
+
+ 
+  // delay before next reading:
+  delay(500);
 
 
 
@@ -178,11 +247,11 @@ void loop(void) {
 
 
   //read serial for setpoint change:
-   if (Serial.available()) {
+  // if (Serial.available()) {
         /* read the most recent byte */
-        SetpointHeat = Serial.parseInt();
-       }
-       SetpointCool = SetpointHeat + 5;  // resetting just in case
+  //      SetpointHeat = Serial.parseInt();
+  //     }
+       int SetpointCool = SetpointHeat + 5;  // resetting just in case
   //done reading for setpoint change
   
     
@@ -198,11 +267,12 @@ void loop(void) {
 
 
 
-    Serial.print("      SetpointHeat: ");  Serial.print(SetpointHeat);
+    Serial.print("      Setpoint: ");  Serial.print(SetpointHeat);
     Serial.print("      SetpointCool: ");  Serial.print(SetpointCool);
     Serial.print("      FireOn: ");  Serial.print(FireOn);
     Serial.print("      CoolingOn: ");  Serial.print(CoolingOn);
-    Serial.print('\n');
+    Serial.println();
+
     //done reading & displaying temperature
 
 
