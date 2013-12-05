@@ -86,7 +86,8 @@ void setup(void)
   
   
   int COUNTER = 0;
-  while(COUNTER < 10) {
+  while(COUNTER < 4) // do all this 4 times...
+  {
   
           
     
