@@ -263,49 +263,78 @@ void loop(void) {
  // delay before next reading:
  //delay(500);
 
-
-
-
-
-
-
-
-
  ////////////////////////////////// HEATING / COOLING CONTROL
 
   // The results printed by Serial will be sent to the server
   // so I've taken out the titles. 
-  byte incomingByte = Serial.read();
   Serial.println(String(int(fahrenheit_rad)) + "°F," + String(int(fahrenheit_air)) + "°F," + String(int(OperativeTemp))+"°F");
 
-
+  /*
   //read serial for setpoint change:
    if (Serial.available()) {
-        /* read the most recent byte */
+        // read the most recent byte
         // NOTE: This should be the same in terms of getting the heat/cooling to work in the UI,
         // since the ASCII code for binary 1/0 is 49 and 48, respectively. 
         // I'm changing the conditions slightly to meet the needs of the toggle conditions of the UI. 
         // We should test this out in person, however, to tweak this as necessary. 
         SetpointHeat = Serial.parseInt();
-
        }
        int SetpointCool = SetpointHeat + 5;  // resetting just in case
   //done reading for setpoint change
+  */
   
-    
-    //read & print temperature from 3-pinthermosensor:
-        // read the input on analog pin 0:
-        //int sensorValue = analogRead(thermosensor);
-        // Convert the analog reading (which goes from 0 - 1023) to a voltage (0 - 5V):
-        //float voltage = sensorValue * (5.0 / 1023.0);
-        //float temperatureC = (voltage - 0.5) * 100 ;  //converting from 10 mv per degree wit 500 mV offset
-        //float temperatureF = temperatureC * 9/5 + 32;
-        // print out the value you read:
-        // Serial.print("Temperature: ");  Serial.print(temperatureF);
+  
+   //if (Serial.available()) {
+        // read the most recent byte
+        // NOTE: This should be the same in terms of getting the heat/cooling to work in the UI,
+        // since the ASCII code for binary 1/0 is 49 and 48, respectively. 
+        // I'm changing the conditions slightly to meet the needs of the toggle conditions of the UI. 
+        // We should test this out in person, however, to tweak this as necessary. 
+        //SetpointHeat = Serial.parseInt();
 
+       //}
+       //int SetpointCool = SetpointHeat + 5;  // resetting just in case  
+  
+  char incomingByte = Serial.read();
 
-
-
+  Serial.println("Incoming Byte: " + String(incomingByte));
+  // if incomingByte is 0/1 -> @index.html heatingOnOff logic
+  // if incomingByte is 2/3 -> @index.html coolingOnOff logic
+  // current values have offsets due to the really off temperature values
+  if (incomingByte == 'A') {
+    SetpointHeat = OperativeTemp - 5000;
+    Serial.println("hello");    
+    Serial.println(SetpointHeat);
+    //FireOn = false;
+  } 
+  
+  
+  if (incomingByte == 'B') {
+    SetpointHeat = OperativeTemp + 5000;    
+    Serial.println("hi");        
+    Serial.println(SetpointHeat);    
+    //FireOn = true;    
+  }
+ 
+  if (incomingByte == 'C') {
+    SetpointCool = OperativeTemp - 5000;        
+    //Serial.println("hey");            
+    //Serial.println(SetpointCool);        
+    //CoolingOn = false; 
+  } 
+  
+  if (incomingByte == 'D') {
+    SetpointCool = OperativeTemp + 5000;            
+    //Serial.println("ho");    
+    //Serial.println(SetpointCool);        
+    //CoolingOn = true;
+  }  
+  
+  Serial.println("SetPointHeat: " + String(SetpointHeat));          
+  Serial.println("SetPointCool: " + String(SetpointCool));          
+  Serial.println("OperativeTemp" + String(int(OperativeTemp)));            
+  
+  
     /*
     Serial.print("      SetpointHeat: ");  Serial.print(SetpointHeat);
     Serial.print("      SetpointCool: ");  Serial.print(SetpointCool);
@@ -320,7 +349,7 @@ void loop(void) {
     //Turn on fire if it's cool, turn on cooling if it's warm.  
     //Turn everything off if temp in spec.
     //light up red LED for heating & blue LED for cooling:
-    if(OperativeTemp < SetpointHeat || incomingByte == 49) { 
+    if(OperativeTemp < SetpointHeat) { 
           // turn off cooling:
           digitalWrite(cooler, LOW);   
           CoolingOn = false;
@@ -341,7 +370,7 @@ void loop(void) {
            
          } 
        else {
-              if(OperativeTemp > SetpointCool || incomingByte == 48) { 
+              if(OperativeTemp > SetpointCool) { 
                    //Turn off fire:
                    digitalWrite(igniter, LOW);  // turn off igniter
                    digitalWrite(propane, LOW);  //turn off propane
@@ -371,7 +400,31 @@ void loop(void) {
                       }
            }
   
-  delay(100);               // wait for a tad
+  delay(500);               // wait for a tad
+}
+
+
+
+// Display connection details like the IP address.
+bool displayConnectionDetails(void)
+{
+  uint32_t ipAddress, netmask, gateway, dhcpserv, dnsserv;
+  
+  if(!cc3000.getIPAddress(&ipAddress, &netmask, &gateway, &dhcpserv, &dnsserv))
+  {
+    Serial.println(F("Unable to retrieve the IP Address!\r\n"));
+    return false;
+  }
+  else
+  {
+    Serial.print(F("\nIP Addr: ")); cc3000.printIPdotsRev(ipAddress);
+    Serial.print(F("\nNetmask: ")); cc3000.printIPdotsRev(netmask);
+    Serial.print(F("\nGateway: ")); cc3000.printIPdotsRev(gateway);
+    Serial.print(F("\nDHCPsrv: ")); cc3000.printIPdotsRev(dhcpserv);
+    Serial.print(F("\nDNSserv: ")); cc3000.printIPdotsRev(dnsserv);
+    Serial.println();
+    return true;
+  }
 }
 
 

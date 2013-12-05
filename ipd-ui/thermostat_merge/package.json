@@ -5,8 +5,13 @@
   "private": true,
   "dependencies": {
     "serialport": "1.x",
-    "socket.io": "~0.9.6",
+    "socket.io": "*",
     "express" : "3.*",
-    "jade": "*"
-  }
+    "jade": "*",
+    "redis": "*",
+    "hiredis":"*"
+  }, 
+  "scripts": {
+
+
 }
