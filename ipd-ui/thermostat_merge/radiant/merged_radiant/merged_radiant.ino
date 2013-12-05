@@ -74,6 +74,7 @@ int SetpointHeat = 60;
 int SetpointCool;  // maybe make independent later
 boolean FireOn = false;
 boolean CoolingOn = false;
+boolean hotCold = true; 
 float arccos = 0;
 float KnobSetpointPrevious = 0; 
 
@@ -236,12 +237,12 @@ void loop(void) {
   
   arccos = acos(cosine);
   int KnobSetpoint = arccos * (-10.308) + 91.905;
-  Serial.print("knobSetpoint: "); 
-  Serial.print(KnobSetpoint);
-  Serial.print("    "); 
-  Serial.print("knobSetPrev: "); 
-  Serial.print(KnobSetpointPrevious);
-  Serial.print("    "); 
+  //Serial.print("knobSetpoint: "); 
+  //Serial.print(KnobSetpoint);
+  //Serial.print("    "); 
+  //Serial.print("knobSetPrev: "); 
+  //Serial.print(KnobSetpointPrevious);
+  //Serial.print("    "); 
   
   
   //Knob sets temp setpoint IF THE KNOB POSITION HAS CHANGED:
@@ -274,7 +275,8 @@ void loop(void) {
 
   // The results printed by Serial will be sent to the server
   // so I've taken out the titles. 
-  Serial.print(fahrenheit_rad + " °F," + fahrenheit_air + " °F," + OperativeTemp+" °F");
+  byte incomingByte = Serial.read();
+  Serial.println(String(int(fahrenheit_rad)) + "°F," + String(int(fahrenheit_air)) + "°F," + String(int(OperativeTemp))+"°F");
 
 
   //read serial for setpoint change:
@@ -285,7 +287,7 @@ void loop(void) {
         // I'm changing the conditions slightly to meet the needs of the toggle conditions of the UI. 
         // We should test this out in person, however, to tweak this as necessary. 
         SetpointHeat = Serial.parseInt();
-        byte incomingByte = Serial.read();
+
        }
        int SetpointCool = SetpointHeat + 5;  // resetting just in case
   //done reading for setpoint change
