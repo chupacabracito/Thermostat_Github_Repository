@@ -296,7 +296,7 @@ void loop(void) {
           if(FireOn == false) {
              digitalWrite(igniter, HIGH);    // turn on igniter
              digitalWrite(YellowLED, HIGH);
-             delay(50);                     // wait for igniter to heat up
+             delay(5000);                     // wait for igniter to heat up
              digitalWrite(propane, HIGH);    // turn on propane
              delay(100);                    //blow fire for a second before resetting
              FireOn = true;

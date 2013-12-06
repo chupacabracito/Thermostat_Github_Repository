@@ -32,13 +32,13 @@ int cooler = 9;
 int BlueLED = 6;    // actually not used
 int YellowLED = 2;  // actually not used
 int RedLED = 4;    // actually not used
-//int thermosensor = A1;
+int thermosensor = A1;
 int SetpointHeat = 60;
 int SetpointCool;  // maybe make independent later
 boolean FireOn = false;
 boolean CoolingOn = false;
 float arccos = 0;
-int KnobSetpointPrevious = 0; 
+float KnobSetpointPrevious = 0; 
 
 
 //////////////////////////////////ACCELEROMETER DECLERATIONS
@@ -99,88 +99,112 @@ void loop(void) {
   float average_rad;
   float average_air;
   float OperativeTemp;
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+/////////////////////////////////READ THERMOSENSOR (NOT NORMALLY USED!)
+    //read & print temperature from 3-pinthermosensor:
+        // read the input on analog pin 0:
+        int sensorValue = analogRead(thermosensor);
+        // Convert the analog reading (which goes from 0 - 1023) to a voltage (0 - 5V):
+        float voltage = sensorValue * (5.0 / 1023.0);
+        float temperatureC = (voltage - 0.5) * 100 ;  //converting from 10 mv per degree wit 500 mV offset
+        float fahrenheit_rad = temperatureC * 9/5 + 32;
+        // print out the value you read:
+        // Serial.print("Temperature: ");  Serial.print(temperatureF);
+//DONE READING THERMOSESNSOR, BUT ALSO COMMENT OUT THE LINE IN DECLARATIONS 
+//READING PIN A1, THAT'S ONLY NEEDED HERE.
+
  
  ///////////////////////////////////////////////READ RADIANT TEMP 
- 
-  // take N samples in a row, with a slight delay
-  for (i=0; i< NUMSAMPLES; i++) {
-   samples_rad[i] = analogRead(THERMISTORPIN_RADIANT);
-   delay(10);
-  }
- 
-  // average all the samples out
-  average_rad = 0;
-  for (i=0; i< NUMSAMPLES; i++) {
-     average_rad += samples_rad[i];
-  }
-  average_rad /= NUMSAMPLES;
- 
- // Serial.print("Average analog reading "); 
- // Serial.println(average_rad);
- 
-  // convert the value to resistance
-  average_rad = 1023 / average_rad - 1;
-  average_rad = SERIESRESISTOR / average_rad;
-// Serial.print("Thermistor resistance "); 
-//  Serial.println(average_radiant);
- 
-  float steinhart_rad;
-  steinhart_rad = average_rad / THERMISTORNOMINAL;     // (R/Ro)
-  steinhart_rad = log(steinhart_rad);                  // ln(R/Ro)
-  steinhart_rad /= BCOEFFICIENT;                   // 1/B * ln(R/Ro)
-  steinhart_rad += 1.0 / (TEMPERATURENOMINAL + 273.15); // + (1/To)
-  steinhart_rad = 1.0 / steinhart_rad;                 // Invert
-  steinhart_rad -= 273.15;                         // convert to C
-  float fahrenheit_rad = steinhart_rad * 9/5 + 32;     // convert to F
- 
+// 
+//  // take N samples in a row, with a slight delay
+//  for (i=0; i< NUMSAMPLES; i++) {
+//   samples_rad[i] = analogRead(THERMISTORPIN_RADIANT);
+//   delay(10);
+//  }
+// 
+//  // average all the samples out
+//  average_rad = 0;
+//  for (i=0; i< NUMSAMPLES; i++) {
+//     average_rad += samples_rad[i];
+//  }
+//  average_rad /= NUMSAMPLES;
+// 
+// // Serial.print("Average analog reading "); 
+// // Serial.println(average_rad);
+// 
+//  // convert the value to resistance
+//  average_rad = 1023 / average_rad - 1;
+//  average_rad = SERIESRESISTOR / average_rad;
+//// Serial.print("Thermistor resistance "); 
+////  Serial.println(average_radiant);
+// 
+//  float steinhart_rad;
+//  steinhart_rad = average_rad / THERMISTORNOMINAL;     // (R/Ro)
+//  steinhart_rad = log(steinhart_rad);                  // ln(R/Ro)
+//  steinhart_rad /= BCOEFFICIENT;                   // 1/B * ln(R/Ro)
+//  steinhart_rad += 1.0 / (TEMPERATURENOMINAL + 273.15); // + (1/To)
+//  steinhart_rad = 1.0 / steinhart_rad;                 // Invert
+//  steinhart_rad -= 273.15;                         // convert to C
+//  float fahrenheit_rad = steinhart_rad * 9/5 + 32;     // convert to F
+// 
   Serial.print("Radiant Temp: "); 
   Serial.print(fahrenheit_rad);
   Serial.print(" *F");
   Serial.print('\t');
  
  //////////////////////////////////READ AIR TEMP
- 
-  // take N samples in a row, with a slight delay
-  for (i=0; i< NUMSAMPLES; i++) {
-   samples_air[i] = analogRead(THERMOSTORPIN_AIR);
-   //delay(10);
-  }
- 
-  // average all the samples out
-  average_air = 0;
-  for (i=0; i< NUMSAMPLES; i++) {
-     average_air += samples_air[i];
-  }
-  average_air /= NUMSAMPLES;
- 
- // Serial.print("Average analog reading "); 
- // Serial.println(average);
- 
-  // convert the value to resistance
-  average_air = 1023 / average_air - 1;
-  average_air = SERIESRESISTOR / average_air;
- // Serial.print("Thermistor resistance "); 
- // Serial.println(average_air);
- 
-  float steinhart_air;
-  steinhart_air = average_air / THERMISTORNOMINAL;     // (R/Ro)
-  steinhart_air = log(steinhart_air);                  // ln(R/Ro)
-  steinhart_air /= BCOEFFICIENT;                   // 1/B * ln(R/Ro)
-  steinhart_air += 1.0 / (TEMPERATURENOMINAL + 273.15); // + (1/To)
-  steinhart_air = 1.0 / steinhart_air;                 // Invert
-  steinhart_air -= 273.15;                         // convert to C
+// 
+//  // take N samples in a row, with a slight delay
+//  for (i=0; i< NUMSAMPLES; i++) {
+//   samples_air[i] = analogRead(THERMOSTORPIN_AIR);
+//   //delay(10);
+//  }
+// 
+//  // average all the samples out
+//  average_air = 0;
+//  for (i=0; i< NUMSAMPLES; i++) {
+//     average_air += samples_air[i];
+//  }
+//  average_air /= NUMSAMPLES;
+// 
+// // Serial.print("Average analog reading "); 
+// // Serial.println(average);
+// 
+//  // convert the value to resistance
+//  average_air = 1023 / average_air - 1;
+//  average_air = SERIESRESISTOR / average_air;
+// // Serial.print("Thermistor resistance "); 
+// // Serial.println(average_air);
+// 
+//  float steinhart_air;
+//  steinhart_air = average_air / THERMISTORNOMINAL;     // (R/Ro)
+//  steinhart_air = log(steinhart_air);                  // ln(R/Ro)
+//  steinhart_air /= BCOEFFICIENT;                   // 1/B * ln(R/Ro)
+//  steinhart_air += 1.0 / (TEMPERATURENOMINAL + 273.15); // + (1/To)
+//  steinhart_air = 1.0 / steinhart_air;                 // Invert
+//  steinhart_air -= 273.15;                         // convert to C
   float fahrenheit_air = fahrenheit_air * 9/5 + 32;     // convert to F
- 
-  //Since hardware for air temp sensor not working yet, just set equal to radiant temp:
+// 
+//  //Since hardware for air temp sensor not working yet, just set equal to radiant temp:
    fahrenheit_air = fahrenheit_rad;
-   //delete that when air temp sensor working!
- 
- 
-  //Serial.print("Air Temp (fake): "); 
-  //Serial.print(fahrenheit_air);
-  //Serial.print(" *F");
-  //Serial.print('\t');
- 
+//   //delete that when air temp sensor working!
+// 
+// 
+//  //Serial.print("Air Temp (fake): "); 
+//  //Serial.print(fahrenheit_air);
+//  //Serial.print(" *F");
+//  //Serial.print('\t');
+// 
  
  ////////////////////////////////// calc operative temp
  OperativeTemp = (fahrenheit_rad + fahrenheit_air)/2;
@@ -223,12 +247,12 @@ void loop(void) {
   Serial.print("    "); 
   
   
-  //Knob sets temp setpoint IF THE KNOB POSITION HAS CHANGED: 
-  if (abs(KnobSetpoint - KnobSetpointPrevious) > 1) {
-          SetpointHeat = KnobSetpoint;    
-          KnobSetpointPrevious = KnobSetpoint;
-          }
-  else {}
+  //Knob sets temp setpoint IF THE KNOB POSITION HAS CHANGED:
+  if (KnobSetpoint == KnobSetpointPrevious) {}
+  else {
+        SetpointHeat = KnobSetpoint;    
+        KnobSetpointPrevious = KnobSetpoint;
+       }
        
   //done setting temp setpoint
   
@@ -261,18 +285,6 @@ void loop(void) {
   //done reading for setpoint change
   
     
-    //read & print temperature from 3-pinthermosensor:
-        // read the input on analog pin 0:
-        //int sensorValue = analogRead(thermosensor);
-        // Convert the analog reading (which goes from 0 - 1023) to a voltage (0 - 5V):
-        //float voltage = sensorValue * (5.0 / 1023.0);
-        //float temperatureC = (voltage - 0.5) * 100 ;  //converting from 10 mv per degree wit 500 mV offset
-        //float temperatureF = temperatureC * 9/5 + 32;
-        // print out the value you read:
-        // Serial.print("Temperature: ");  Serial.print(temperatureF);
-
-
-
     Serial.print("      SetpointHeat: ");  Serial.print(SetpointHeat);
     Serial.print("      SetpointCool: ");  Serial.print(SetpointCool);
     Serial.print("      FireOn: ");  Serial.print(FireOn);

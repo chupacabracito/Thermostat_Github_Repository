@@ -38,7 +38,7 @@ int SetpointCool;  // maybe make independent later
 boolean FireOn = false;
 boolean CoolingOn = false;
 float arccos = 0;
-int KnobSetpointPrevious = 0; 
+float KnobSetpointPrevious = 0; 
 
 
 //////////////////////////////////ACCELEROMETER DECLERATIONS
@@ -223,11 +223,15 @@ void loop(void) {
   Serial.print("    "); 
   
   
-  //Knob sets temp setpoint IF THE KNOB POSITION HAS CHANGED: 
-  if (abs(KnobSetpoint - KnobSetpointPrevious) > 1) {
-          SetpointHeat = KnobSetpoint;    
-          KnobSetpointPrevious = KnobSetpoint;
-          }
+  //Knob sets temp setpoint IF THE KNOB POSITION HAS CHANGED:
+  
+  int difference = KnobSetpoint - KnobSetpointPrevious;
+  int absdiff = abs(difference);
+  
+  if (absdiff > 1) {
+                    SetpointHeat = KnobSetpoint;    
+                    KnobSetpointPrevious = KnobSetpoint;
+                    }
   else {}
        
   //done setting temp setpoint
