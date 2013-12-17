@@ -1,0 +1,21 @@
+{
+  "name": "thermostat",
+  "version": "0.5.5-1",
+  "description": "radiant thermostat UI",
+  "private": true,
+  "dependencies": {
+    "serialport": "1.x",
+    "socket.io": "*",
+    "express": "3.*",
+    "jade": "*",
+    "redis": "*",
+    "hiredis": "*"
+  },
+  "subdomain": "juandejoya-thermostat_merge",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": "0.10.x"
+  }
+}
