@@ -129,6 +129,16 @@
             number = d3.format("f");
             second_format = d3.time.format("%S");            
             
+            parse = function(Y, M, D, H, I, S) {
+                return new Date(
+                    (Y == '*')? d1.getFullYear() : Y,
+                    (M == '*')? d1.getMonth()    : M,
+                    (D == '*')? d1.getDate()     : D,
+                    (H == '*')? d1.getHours()    : H,
+                    (I == '*')? d1.getMinutes()  : I,
+                    S);
+            }
+
             var zoom = d3.behavior.zoom()
             .scaleExtent([1, 5])
             .on("zoom", zoomed);
@@ -191,8 +201,11 @@
             var container = svg.append("g");
             
 			// Set scales for time & temp axes:
-            var d1 = new Date(2013, 10, 27, 12, 0, 0, 0);
-            var d2 = new Date(2013, 10, 27, 12, 1, 0, 0);   // This's only a one-minute time span!
+            var d1 = new Date(); 
+            d1.setSeconds(0);    // current time but round minute down (0 secs)
+            d1.setMilliseconds(0); // round seconds down
+            var d2 = new Date(d1.getTime() + 60*1000); // d1's date + 60 seconds
+            
             var x = d3.time.scale().domain([d1,d2]).range([0, width]),
             y = d3.scale.linear().domain([40, 90]).range([height, 0]),
             xTime = d3.scale.linear().domain([0,60]).range([0, width]);
@@ -230,7 +243,7 @@
 			
 			// Start the graph with some stock datapoints?
             var initGraph = function() {
-                d3.tsv("test.tsv", dottype, function(error, dots) {
+                d3.tsv("schedule.tsv", parseRow, function(error, dots) {
                        dot = container.append("g")
                        .attr("clip-path", "url(#clip)")                       
                        .attr("class", "dots")
@@ -242,10 +255,10 @@
                        .append("circle")
                        .attr("r", 5)
                        .attr("cx", function(d) {
-                             console.log(parse(d.date + " " + d.time));
-                             return x(parse(d.date + " " + d.time)); })
+                             console.log(d.d);
+                             return x(d.d); })
                        .attr("cy", function(d) {
-                             //console.log(d.temp);
+                             console.log(d.temp);
                              return y(d.temp); })
                        .on("click", removed)
                        .on("mouseover", mouseover)
@@ -257,10 +270,8 @@
             } 
             
             
-            function dottype(d) {
-                d.x = +d.x;
-                d.y = +d.y;
-                return d;
+            function parseRow(d) {
+                return { d : parse(d.y,d.m,d.d,d.h,d.i,d.s), temp:+d.temp};
             }
             
             function zoomed() {
@@ -515,6 +526,7 @@
             updateTime();
 
             $(function() {
+                // perform an AJAX query to the server and update the info
                 function fetch() {
                     $.getJSON("data.json", function(data) {
                         $("#sensorReadingAir").text(data.af);
@@ -530,7 +542,10 @@
                             $("#sensorReadingCool").text(data.sc);
                     });
                 }
+                // seed initial data
                 fetch();
+
+                // get latest thermostat data every 5000ms (5s)
                 setInterval(fetch, 5000);
             });
             

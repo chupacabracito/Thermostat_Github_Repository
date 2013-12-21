@@ -27,8 +27,8 @@ $params = array(
     array("ot", "degF", false), // operative temp
     array("h",  "bool", false), // heating on (optional)
     array("c",  "bool", false), // cooling on
-    array("sH", "degF", true),  // set point Heat (optional)
-    array("sC", "degF", true)   // set point Cool (optional)
+    array("sh", "degF", true),  // set point Heat (optional)
+    array("sc", "degF", true)   // set point Cool (optional)
 );
 
 // regular expression patterns to verify parameters
@@ -70,3 +70,4 @@ function valid($param) {
     $p = $param[0];
     return (isset($_GET[$p]) && preg_match($patterns[$param[1]], $_GET[$p]));
 }
+
