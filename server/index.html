@@ -271,10 +271,9 @@
             
             
             function parseRow(d) {
-                return { 
-                    d : parse(d.yr,d.mon,d.day,d.hr,d.min,d.sec),
-                    temp:+d.temp
-                };
+                dot = parse(d.yr,d.mon,d.day,d.hr,d.min,d.sec);
+                if (dot < d1 || dot > d2) return null;
+                return { "d":dot, "temp":+d.temp };
             }
             
             function zoomed() {
@@ -336,12 +335,13 @@
                     .style('font-family', 'Arial');
                     
                     //to pull time, temp from x,y pixel values:
-                    var TransformedCoords =
-                    [x.invert(coords[0]), y.invert(coords[1])];
-                    //   [x.invert(coords[0]), y.invert(coords[1])];
-                    TimeTempData.push(TransformedCoords);
+                    TimeTempData[n-1] = { 
+                        d: x.invert(coords[0]),
+                        temp: Math.round(y.invert(coords[1])) 
+                    };
                     
-                    
+                    // send the new dot to the server
+                    updateSchedule();
                     
                     
                     console.log("this is the time " + second_format(x0));
@@ -354,6 +354,7 @@
             function removed() {
                 if (d3.event.shiftKey) {
                     d3.select(this).remove();
+                    updateSchedule();
                 }
             }
             
@@ -370,7 +371,7 @@
                 if (d3.event.y >= 0 && d3.event.y <= 395
                     && d3.event.x >= 0 && d3.event.x <= 790) {
                     var x0 = x.invert(d3.mouse(this)[0]);
-                    var y0 = y.invert(d3.mouse(this)[1]);
+                    var y0 = Math.round(y.invert(d3.mouse(this)[1]));
                     
                     
                     d3.select(this).selectAll("circle")
@@ -387,12 +388,17 @@
                           return second_format(x0);
                           ;})
                     .text(number(y0));
-                    
+
                 }
             }
             
             function dragended(d) {
                 d3.select(this).selectAll("*").classed("dragging", false);
+                var x0 = x.invert(d3.mouse(this)[0]);
+                var y0 = Math.round(y.invert(d3.mouse(this)[1]));
+console.log(this.id);
+                TimeTempData[this.id] = { d: x0, temp: y0 };
+                updateSchedule();
             }
             
 			
@@ -420,6 +426,28 @@
                 d3.select(this).select("circle").attr("fill", "#000");
             }
             
+            function updateSchedule() {
+                var interval = (d2-d1)/3600000.0; // get the interval in hrs
+
+                // build the schedule to send to the server
+                var schedule = "sec\tmin\thr\tday\tmon\tyr\ttemp\n";
+                function append(o) {
+                    schedule = schedule + o.d.getSeconds() + "\t" +
+                               ((interval >= 1)   ?o.d.getMinutes():"*")+"\t"+
+                               ((interval >= 24)  ?o.d.getHours()  :"*")+"\t"+
+                               ((interval >= 672) ?o.d.getDate()   :"*")+"\t"+
+                               ((interval >= 8640)?o.d.getYear()   :"*")+"\t"+
+                               o.temp + "\n";
+                }
+
+                d3.selectAll(".dot").each(function(d){ append(d); });
+
+                for(var i=0; i<TimeTempData.length; i++)
+                    if(typeof TimeTempData[i] !== 'undefined')
+                        append(TimeTempData[i]);
+
+                console.log(schedule);
+            }
             
 //done deleting dot / moving dot
 			

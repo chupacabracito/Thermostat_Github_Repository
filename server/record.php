@@ -60,6 +60,7 @@ foreach ($params as $p) {
 // array maps TSV to date items
 $t = array(date("s"), date("i"), date("H"), date("j"), date("n"), date("Y"));
 
+// record the probable set point
 $max = array(0, 0);
 
 // output the temperature set point
