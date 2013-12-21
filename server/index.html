@@ -436,8 +436,8 @@ console.log(this.id);
                                ((interval >= 1)   ?o.d.getMinutes():"*")+"\t"+
                                ((interval >= 24)  ?o.d.getHours()  :"*")+"\t"+
                                ((interval >= 672) ?o.d.getDate()   :"*")+"\t"+
-                               ((interval >= 8640)?o.d.getYear()   :"*")+"\t"+
-                               o.temp + "\n";
+                               ((interval >= 8640)?o.d.getMonth()  :"*")+"\t"+
+                               "*\t" + o.temp + "\n";
                 }
 
                 d3.selectAll(".dot").each(function(d){ append(d); });
@@ -446,7 +446,7 @@ console.log(this.id);
                     if(typeof TimeTempData[i] !== 'undefined')
                         append(TimeTempData[i]);
 
-                console.log(schedule);
+                $.post("schedule.php", {tsv: schedule});
             }
             
 //done deleting dot / moving dot
