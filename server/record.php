@@ -19,6 +19,9 @@
   * the data from many thermostats.
   */
 
+// all times are assumed to be Pacific time
+date_default_timezone_set("America/Los_Angeles");
+
 // a list of parameters with each being:
 // [param name, param type, optional]
 $params = array(
@@ -54,8 +57,38 @@ foreach ($params as $p) {
 // store the json data
 @file_put_contents("data.json", json_encode($data));
 
+// array maps TSV to date items
+$t = array(date("s"), date("i"), date("H"), date("j"), date("n"), date("Y"));
+
+$max = array(0, 0);
+
 // output the temperature set point
-echo "100";
+if (($h = fopen("schedule.tsv", "r")) !== FALSE) {
+    @fgetcsv($h, 32, "\t"); // consume the header line
+
+    while (($d = fgetcsv($h, 32, "\t")) !== FALSE) {
+        $m = array(date("s"), date("i"), date("H"), date("j"), date("n"), date("Y"));
+        $seen = false;
+        for($i = 0; $i < 6; $i++) {
+            if($d[$i] == "*" && !$seen)
+                $m[$i] = ($t[$i-1] < $d[$i-1])? $t[$i]-1 : $t[$i];
+            else
+                $m[$i] = $d[$i];
+        }
+                
+        $date = mktime($m[2], $m[1], $m[0], $m[4], $m[3], $m[5]);
+ 
+        if ($date > time()) continue;
+
+        if ($date > $max[0]) {
+            $max[0] = $date;
+            $max[1] = $d[6];
+        }
+    }
+    fclose($h);
+}
+
+echo $max[1];
 
 // output an http error code if there's a problem
 function error($code) {

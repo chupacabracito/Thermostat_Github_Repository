@@ -271,7 +271,10 @@
             
             
             function parseRow(d) {
-                return { d : parse(d.y,d.m,d.d,d.h,d.i,d.s), temp:+d.temp};
+                return { 
+                    d : parse(d.yr,d.mon,d.day,d.hr,d.min,d.sec),
+                    temp:+d.temp
+                };
             }
             
             function zoomed() {
